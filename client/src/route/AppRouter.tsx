@@ -1,7 +1,7 @@
 import { BrowserRouter , Routes , Route } from "react-router-dom"
-import Home from "../pages/Home"
-import Login from "../pages/Login"
-import Register from "../pages/Register"
+import Home from "../pages/user/Home"
+import Login from "../pages/auth/Login"
+import Register from "../pages/auth/Register"
 function AppRouter() {
   return (
     <BrowserRouter>
