@@ -7,7 +7,7 @@ import { register } from '../controllers/authController';
 const router = express.Router();
 
 router
-.post("/registration", tryCatch(register))
+.post("/register", tryCatch(register))
 
 
 
