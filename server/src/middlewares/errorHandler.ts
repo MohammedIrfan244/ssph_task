@@ -18,3 +18,6 @@ const errorHandler = (
     message,
   });
 };
+
+
+export default errorHandler;

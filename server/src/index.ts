@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import dbConnect from "./config/dbConnect"
 import cors from "cors"
 import authRoute from "./routes/authRoute"
+import errorHandler from "./middlewares/errorHandler"
 
 
 dotenv.config()
@@ -18,6 +19,9 @@ app.use(express.json())
 
 app.use("/api/auth",authRoute)
 
+
+
+app.use(errorHandler)
 const port = process.env.PORT || 3000
 
 app.listen(port, () => {
