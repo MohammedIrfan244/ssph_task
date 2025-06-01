@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import axiosErrorManager from "../../lib/utils/axiosError";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../store/authSlice";
+import { toast } from "react-toastify";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -32,6 +33,7 @@ const LoginForm = () => {
 
       localStorage.setItem("token", response.data.token);
       dispatch(setUser(response.data.user));
+      toast.success(response.data.message || "Login successful");
       navigate("/");
     } catch (err) {
       setError(axiosErrorManager(err));

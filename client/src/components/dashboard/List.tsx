@@ -4,6 +4,7 @@ import { FaEdit, FaTrash, FaTimes, FaUser, FaCalendarAlt, FaFileAlt } from "reac
 import type { IPostTitle, IPost } from "../../lib/types/type";
 import axiosErrorManager from "../../lib/utils/axiosError";
 import api from "../../lib/utils/axios";
+import { toast } from "react-toastify";
 
 function List() {
     const [posts, setPosts] = useState<IPostTitle[]>([]);
@@ -97,6 +98,7 @@ function List() {
                 getPost(id);
             }
         } catch (error) {
+            toast.error(axiosErrorManager(error));
             console.log(axiosErrorManager(error));
         }
     }
@@ -117,6 +119,8 @@ function List() {
                 getPosts();
             }
         } catch (error) {
+            toast.error(axiosErrorManager(error));
+            setPost(null);
             console.log(axiosErrorManager(error));
         }
     }

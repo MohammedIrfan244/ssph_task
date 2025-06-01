@@ -5,6 +5,8 @@ import axiosErrorManager from "../../lib/utils/axiosError";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface FormValues {
     username: string;
@@ -18,6 +20,7 @@ const RegisterForm = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const navigate = useNavigate();
 
     const initialValues: FormValues = {
         username: "",
@@ -49,8 +52,9 @@ const RegisterForm = () => {
                 import.meta.env.VITE_API_URL + "/auth/register",
                 values
             );
-            alert(response.data.message);
+            toast.success(response.data.message || "User registered")
             resetForm();
+            navigate("/auth/login");
         } catch (err) {
             setServerError(axiosErrorManager(err));
         } finally {

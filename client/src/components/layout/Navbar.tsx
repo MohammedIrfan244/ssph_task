@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../store/authSlice";  
 import { MdLogout } from "react-icons/md";
 import { FaUser, FaEdit } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 function Navbar() {     
     const { user } = useSelector((state: RootState) => state.auth);     
@@ -12,8 +13,13 @@ function Navbar() {
     const dispatch = useDispatch();     
     
     const handleLogout = () => {         
-        dispatch(logout());         
-        navigate("/auth/login");     
+        try{
+            dispatch(logout());         
+        navigate("/auth/login");  
+        }catch(error){
+            toast.error("Logout failed. Please try again.");
+            console.error("Logout failed:", error);
+        }
     };
 
     const getUserInitial = () => {

@@ -10,11 +10,11 @@ import type { RootState } from "../../store/store";
 function Home() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const { user } = useSelector((state: RootState) => state.auth);
-  
+
   const handleModalOpen = () => {
     setModalOpen(true);
   };
-  
+
   const handleModalClose = () => {
     setModalOpen(false);
   };
@@ -26,7 +26,7 @@ function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Navbar />
-      
+
       <div className="relative pt-24 p-6 lg:p-12 lg:pt-32">
         <div className="max-w-4xl mx-auto mb-8">
           <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
@@ -45,8 +45,8 @@ function Home() {
                   </div>
                 </div>
               </div>
-              
-              <button 
+
+              <button
                 className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-400 to-green-500 text-white font-semibold rounded-xl hover:from-green-500 hover:to-green-600 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
                 onClick={handleModalOpen}
               >
@@ -56,9 +56,7 @@ function Home() {
             </div>
           </div>
         </div>
-
         <List />
-        
         {modalOpen && <PostPopup onClose={handleModalClose} />}
       </div>
     </div>

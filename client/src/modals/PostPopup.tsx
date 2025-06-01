@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axiosErrorManager from "../lib/utils/axiosError";
 import api from "../lib/utils/axios";
+import { toast } from "react-toastify";
 
 interface IPostPopupProps {
     onClose: () => void;
@@ -38,6 +39,7 @@ function PostPopup({onClose}: IPostPopupProps) {
             window.location.reload();
         } 
     }catch(error){
+        toast.error("Failed to create post. " + axiosErrorManager(error));
         console.error(axiosErrorManager(error));
     }
   };
