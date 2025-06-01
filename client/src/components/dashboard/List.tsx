@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { FaEdit, FaTrash, FaTimes, FaUser, FaCalendarAlt, FaFileAlt } from "react-icons/fa";
 import type { IPostTitle, IPost } from "../../lib/types/type";
 import axiosErrorManager from "../../lib/utils/axiosError";
 import api from "../../lib/utils/axios";
@@ -13,24 +14,24 @@ function List() {
     const [editContent, setEditContent] = useState<string>("");
 
     const getPosts = async () => {
-        try{
+        try {
             const response = await api.get("/posts");
-            if(response.data.success){
+            if (response.data.success) {
                 setPosts(response.data.posts);
             }
-        }catch(error){
+        } catch (error) {
             console.log(axiosErrorManager(error))
         }
     }
 
     const getPost = async (id: string) => {
-        try{
+        try {
             const response = await api.get(`/posts/${id}`);
-            if(response.data.success){
+            if (response.data.success) {
                 setPost(response.data.post);
                 setSelectedPostId(id);
             }
-        }catch(error){
+        } catch (error) {
             console.log(axiosErrorManager(error))
         }
     }
@@ -83,19 +84,19 @@ function List() {
     };
 
     const updatePost = async (id: string, title: string, content: string) => {
-        try{
-            const response = await api.put(`/posts/${id}`, { 
-                title: title.trim(), 
-                content: content.trim() 
+        try {
+            const response = await api.put(`/posts/${id}`, {
+                title: title.trim(),
+                content: content.trim()
             });
-            if(response.data.success){
+            if (response.data.success) {
                 setIsEditing(false);
                 setEditTitle("");
                 setEditContent("");
                 getPosts();
                 getPost(id);
             }
-        }catch(error){
+        } catch (error) {
             console.log(axiosErrorManager(error));
         }
     }
@@ -107,142 +108,167 @@ function List() {
     }
 
     const deletePost = async (id: string) => {
-        try{
+        try {
             const response = await api.delete(`/posts/${id}`);
-            if(response.data.success){
+            if (response.data.success) {
                 setPost(null);
                 setSelectedPostId(null);
                 setIsEditing(false);
                 getPosts();
             }
-        }catch(error){
+        } catch (error) {
             console.log(axiosErrorManager(error));
         }
-    }   
-    
-    useEffect(()=>{
+    }
+
+    useEffect(() => {
         getPosts();
-    },[])
+    }, [])
 
     return (
-        <div >
-            {
-                posts.length > 0 ? (
-                    <ul className="space-y-5">
-                        {posts.map((postItem) => (
-                            <li key={postItem._id} className="border-b pb-4">
-                                <h3 
+        <div className="max-w-4xl mx-auto p-4">
+            {posts.length > 0 ? (
+                <div className="space-y-6">
+                    {posts.map((postItem) => (
+                        <div key={postItem._id} className="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-200 hover:shadow-2xl">
+
+                            <div className="p-6 border-b border-gray-100">
+                                <h3
                                     onClick={() => handleSelectPost(postItem._id)}
-                                    className="cursor-pointer hover:text-blue-600 font-medium"
+                                    className="cursor-pointer text-xl font-bold text-gray-800 hover:text-green-500 transition-colors duration-200 mb-3"
                                 >
                                     {postItem.title}
                                 </h3>
-                                <p className="text-gray-600">Author: {postItem.author}</p>
-                                <p className="text-gray-500 text-sm">
-                                    Created At: {format(new Date(postItem.createdAt), "PPP 'at' p")}
-                                </p>
-                                
-                                {selectedPostId === postItem._id && post && (
-                                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                                        {!isEditing ? (
-                                            <>
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <h4 className="font-medium">Content:</h4>
-                                                    <div className="flex gap-2">
-                                                        <button 
-                                                            onClick={handleStartEdit}
-                                                            className="text-blue-500 hover:text-blue-700 text-sm px-2 py-1 border border-blue-500 rounded"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => deletePost(postItem._id)}
-                                                            className="text-red-500 hover:text-red-700 text-sm px-2 py-1 border border-red-500 rounded"
-                                                        >
-                                                            Delete
-                                                        </button>
-                                                        <button 
-                                                            onClick={handleClosePost}
-                                                            className="text-gray-500 hover:text-gray-700 text-xl leading-none"
-                                                        >
-                                                            ×
-                                                        </button>
-                                                    </div>
+
+                                <div className="flex items-center gap-6 text-sm text-gray-500">
+                                    <div className="flex items-center gap-2">
+                                        <FaUser className="text-green-400" />
+                                        <span className="font-medium">{postItem.author}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <FaCalendarAlt className="text-green-400" />
+                                        <span>{format(new Date(postItem.createdAt), "PPP 'at' p")}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            {selectedPostId === postItem._id && post && (
+                                <div className="p-6 bg-gradient-to-br from-gray-50 to-white">
+                                    {!isEditing ? (
+                                        <>
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="flex items-center gap-2">
+                                                    <FaFileAlt className="text-green-400" />
+                                                    <h4 className="font-semibold text-gray-800">Content</h4>
                                                 </div>
-                                                <p className="text-gray-700 whitespace-pre-wrap">{post.content}</p>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <div className="flex justify-between items-center mb-4">
-                                                    <h4 className="font-medium">Edit Post:</h4>
-                                                    <button 
-                                                        onClick={handleCancelEdit}
-                                                        className="text-gray-500 hover:text-gray-700 text-xl leading-none"
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={handleStartEdit}
+                                                        className="flex items-center gap-2 text-green-500 hover:text-green-600 text-sm px-3 py-2 border border-green-300 rounded-lg hover:bg-green-50 transition-all duration-200 font-medium"
                                                     >
-                                                        ×
+                                                        <FaEdit size={14} />
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deletePost(postItem._id)}
+                                                        className="flex items-center gap-2 text-red-500 hover:text-red-600 text-sm px-3 py-2 border border-red-300 rounded-lg hover:bg-red-50 transition-all duration-200 font-medium"
+                                                    >
+                                                        <FaTrash size={14} />
+                                                        Delete
+                                                    </button>
+                                                    <button
+                                                        onClick={handleClosePost}
+                                                        className="text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                                                    >
+                                                        <FaTimes size={16} />
                                                     </button>
                                                 </div>
-                                                
-                                                <div className="space-y-4">
-                                                    <div>
-                                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                            Title
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            value={editTitle}
-                                                            onChange={handleTitleChange}
-                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                            placeholder="Enter title..."
-                                                        />
-                                                        <div className="text-right text-xs text-gray-500 mt-1">
-                                                            {editTitle.length}/25
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div>
-                                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                            Content
-                                                        </label>
-                                                        <textarea
-                                                            value={editContent}
-                                                            onChange={handleContentChange}
-                                                            rows={4}
-                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                                                            placeholder="Enter content..."
-                                                        />
-                                                        <div className="text-right text-xs text-gray-500 mt-1">
-                                                            {editContent.length}/500
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div className="flex gap-2 pt-2">
-                                                        <button
-                                                            onClick={handleCancelEdit}
-                                                            className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
-                                                        >
-                                                            Cancel
-                                                        </button>
-                                                        <button
-                                                            onClick={handleSaveEdit}
-                                                            disabled={!editTitle.trim() || !editContent.trim()}
-                                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                                        >
-                                                            Save Changes
-                                                        </button>
+                                            </div>
+                                            <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                                                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="flex justify-between items-center mb-6">
+                                                <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                                                    <FaEdit className="text-green-400" />
+                                                    Edit Post
+                                                </h4>
+                                                <button
+                                                    onClick={handleCancelEdit}
+                                                    className="text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                                                >
+                                                    <FaTimes size={16} />
+                                                </button>
+                                            </div>
+
+                                            <div className="space-y-5">
+                                                <div>
+                                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                                        Title
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={editTitle}
+                                                        onChange={handleTitleChange}
+                                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-colors text-gray-700 placeholder-gray-400"
+                                                        placeholder="Enter title..."
+                                                    />
+                                                    <div className="text-right text-xs text-gray-500 mt-1 font-medium">
+                                                        {editTitle.length}/25
                                                     </div>
                                                 </div>
-                                            </>
-                                        )}
-                                    </div>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>No posts available</p>
-                )
-            }
+
+                                                <div>
+                                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                                        Content
+                                                    </label>
+                                                    <textarea
+                                                        value={editContent}
+                                                        onChange={handleContentChange}
+                                                        rows={6}
+                                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent resize-none transition-colors text-gray-700 placeholder-gray-400"
+                                                        placeholder="Enter content..."
+                                                    />
+                                                    <div className="text-right text-xs text-gray-500 mt-1 font-medium">
+                                                        {editContent.length}/500
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex gap-3 pt-2">
+                                                    <button
+                                                        onClick={handleCancelEdit}
+                                                        className="px-6 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        onClick={handleSaveEdit}
+                                                        disabled={!editTitle.trim() || !editContent.trim()}
+                                                        className="px-6 py-2 bg-gradient-to-r from-green-400 to-green-500 text-white rounded-lg hover:from-green-500 hover:to-green-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
+                                                    >
+                                                        Save Changes
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center py-12">
+                    <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md mx-auto">
+                        <FaFileAlt className="text-6xl text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-xl font-semibold text-gray-700 mb-2">No Posts Available</h3>
+                        <p className="text-gray-500">Create your first post to get started!</p>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
