@@ -5,6 +5,8 @@ import cors from "cors"
 import authRoute from "./routes/authRoute"
 import postRoute from "./routes/postRoute"
 import errorHandler from "./middlewares/errorHandler"
+import notFound from "./controllers/noFound"
+import { infoLogger } from "./lib/utils/logger"
 
 
 dotenv.config()
@@ -19,12 +21,13 @@ app.use(cors({
 app.use(express.json())
 
 app.use("/api/auth",authRoute)
+app.use("/api/posts", postRoute)
 
-
+app.use(notFound)
 
 app.use(errorHandler)
 const port = process.env.PORT || 3000
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
+  infoLogger(`Server is running on port ${port}`)
 })
