@@ -2,16 +2,17 @@ import express from 'express';
 import { createPost, getPosts, getPostById, editPost, deletePost } from '../controllers/postController';
 import auth from '../middlewares/auth';
 import tryCatch from '../lib/utils/tryCatch';
+import idValidation from '../middlewares/idValidation';
 
 
 
 const router = express.Router();
 router.use(auth); 
 router
-.post('/create', tryCatch(createPost))
+.post('/', tryCatch(createPost))
 .get('/', tryCatch(getPosts))
-.get('/:id', tryCatch(getPostById))
-.put('/:id', tryCatch(editPost))
-.delete('/:id', tryCatch(deletePost));
+.get('/:id', idValidation,tryCatch(getPostById))
+.put('/:id', idValidation,tryCatch(editPost))
+.delete('/:id',idValidation, tryCatch(deletePost));
 
 export default router;

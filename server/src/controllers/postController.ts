@@ -4,12 +4,20 @@ import Post from "../models/postModel";
 import CustomError from "../lib/utils/CustomError";
 
 
-
+const regexEscape = (str: string) => {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); 
+}
 
 const createPost = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const { title, content } = req.body;
     if (!title || !content) {
         return next(new CustomError("Please provide all fields", 400));
+    }
+    const existingPost = await Post.findOne({
+  title: { $regex: `^${regexEscape(title)}$`, $options: "i" }
+});
+    if (existingPost) {
+        return next(new CustomError("Post with this title already exists", 400));
     }
     if(content.length > 500) {
         return next(new CustomError("Content should not exceed 500 characters", 400));
