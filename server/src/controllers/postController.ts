@@ -71,8 +71,8 @@ const editPost = async (req: AuthenticatedRequest, res: Response, next: NextFunc
 
     if (!userId) return next(new CustomError("You are not authenticated", 401));
     if (!postId) return next(new CustomError("Post ID is required", 400));
-    if (!title || !content) {
-        return next(new CustomError("Please provide all fields", 400));
+    if (!title && !content) {
+        return next(new CustomError("Please provide updating fields", 400));
     }
     
     const post = await Post.findById(postId);
@@ -82,12 +82,15 @@ const editPost = async (req: AuthenticatedRequest, res: Response, next: NextFunc
     if (post.author.toString() !== userId) {
         return next(new CustomError("You are not authorized to edit this post", 403));
     }
-    if (content.length > 500) {
-        return next(new CustomError("Content should not exceed 500 characters", 400));
+    if( title) {
+        post.title = title;
     }
-    
-    post.title = title;
-    post.content = content;
+    if( content) {
+        if(content.length > 500) {
+            return next(new CustomError("Content should not exceed 500 characters", 400));
+        }
+        post.content = content;
+    }
     
     await post.save();
     

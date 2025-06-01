@@ -5,7 +5,7 @@ import cors from "cors"
 import authRoute from "./routes/authRoute"
 import postRoute from "./routes/postRoute"
 import errorHandler from "./middlewares/errorHandler"
-import notFound from "./controllers/noFound"
+import notFound from "./middlewares/noFound"
 import { infoLogger } from "./lib/utils/logger"
 
 
