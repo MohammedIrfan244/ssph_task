@@ -3,6 +3,8 @@ import { FaEye ,FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import axiosErrorManager from "../../lib/utils/axiosError";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../store/authSlice";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -11,6 +13,7 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -18,7 +21,6 @@ const LoginForm = () => {
         setError("Email and password are required");
         return;
         }
-    console.log("Login attempt with email:", email);
     setError("");
     setLoading(true);
     try {
@@ -27,7 +29,7 @@ const LoginForm = () => {
       });
 
       localStorage.setItem("token", response.data.token);
-      alert(response.data.message);
+      dispatch(setUser(response.data.user));
         navigate("/");
     } catch (err) {
       setError(axiosErrorManager(err));

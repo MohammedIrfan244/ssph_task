@@ -2,6 +2,7 @@ import { AuthenticatedRequest } from "../lib/types/type";
 import {  Response, NextFunction } from "express";
 import Post from "../models/postModel";
 import CustomError from "../lib/utils/CustomError";
+import mongoose from "mongoose";
 
 
 const regexEscape = (str: string) => {
@@ -38,9 +39,31 @@ const createPost = async (req: AuthenticatedRequest, res: Response, next: NextFu
 const getPosts = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const userId = req.user;
     if (!userId) return next(new CustomError("You are not authenticated", 401));
-    const posts = await Post.find({ author: userId },{title: 1, author: 1, createdAt: 1})
-        .populate("author", "username email")
-        .sort({ createdAt: -1 });
+    
+    const posts = await Post.aggregate([
+        {
+            $match: { author: new mongoose.Types.ObjectId(userId) }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'author',
+                foreignField: '_id',
+                as: 'authorData'
+            }
+        },
+        {
+            $project: {
+                _id: 1,
+                title: 1,
+                author: { $arrayElemAt: ['$authorData.username', 0] },
+                createdAt: 1
+            }
+        },
+        {
+            $sort: { createdAt: -1 }
+        }
+    ]);
 
     return res.status(200).json({
         success: true,
@@ -54,7 +77,7 @@ const getPostById = async (req: AuthenticatedRequest, res: Response, next: NextF
     if (!userId) return next(new CustomError("You are not authenticated", 401));
     if (!postId) return next(new CustomError("Post ID is required", 400));
     
-    const post = await Post.findById(postId).populate("author", "username email");
+    const post = await Post.findById(postId,{ content: 1})
     
     if (!post) return next(new CustomError("Post not found", 404));
     
@@ -82,10 +105,10 @@ const editPost = async (req: AuthenticatedRequest, res: Response, next: NextFunc
     if (post.author.toString() !== userId) {
         return next(new CustomError("You are not authorized to edit this post", 403));
     }
-    if( title) {
+    if( title.length >0) {
         post.title = title;
     }
-    if( content) {
+    if( content.length > 0) {
         if(content.length > 500) {
             return next(new CustomError("Content should not exceed 500 characters", 400));
         }
