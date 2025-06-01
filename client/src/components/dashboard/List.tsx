@@ -125,7 +125,7 @@ function List() {
     },[])
 
     return (
-        <div>
+        <div >
             {
                 posts.length > 0 ? (
                     <ul className="space-y-5">
